@@ -1,0 +1,2 @@
+import {controls} from '../game/bridge';
+export function DirectionPad(){return <div className="direction-pad" aria-label="触屏方向键">{(['up','left','down','right'] as const).map((d,i)=><button key={d} aria-label={{up:'向上',down:'向下',left:'向左',right:'向右'}[d]} className={'direction '+d} onPointerDown={e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);controls[d]=true}} onPointerUp={()=>controls[d]=false} onPointerCancel={()=>controls[d]=false} onLostPointerCapture={()=>controls[d]=false}>{['↑','←','↓','→'][i]}</button>)}</div>}
