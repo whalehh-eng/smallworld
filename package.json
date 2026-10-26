@@ -7,17 +7,18 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "node --experimental-strip-types scripts/check-layout.mjs"
+    "test": "node --experimental-strip-types scripts/check-layout.mjs && node --experimental-strip-types scripts/check-interactions.mjs"
   },
   "dependencies": {
+    "phaser": "^3.90.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "phaser": "^3.90.0"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "~5.8.3",
-    "vite": "^6.3.5",
     "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0"
+    "@types/react-dom": "^19.0.0",
+    "react-test-renderer": "^19.3.1",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5"
   }
 }

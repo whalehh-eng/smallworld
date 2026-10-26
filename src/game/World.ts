@@ -25,7 +25,7 @@ export class World extends Phaser.Scene {
     const zone=this.add.zone(s.x,s.y-10,64,65).setDepth(7).setInteractive({useHandCursor:true});zone.on('pointerdown',()=>{if(this.current===s)this.activate();});this.marks.push(zone);
    }
    // Sparse petals and water glints, all drawn on the same pixel grid.
-   if(room==='town'){for(let i=0;i<14;i++){const p=this.add.rectangle((i*61)%768,(i*97)%576,3,2,i%2?0xe8c1cb:0xe8d8b4,.7).setDepth(12);this.tweens.add({targets:p,x:p.x+40,y:p.y+85,alpha:0,duration:6500+i*200,repeat:-1,delay:i*300});this.effects.push(p);}for(let i=0;i<8;i++){const p=this.add.rectangle(610+i*17,354+(i%4)*38,12,2,0xd6e5da,.4);this.tweens.add({targets:p,alpha:.1,x:p.x+9,duration:1800+i*110,yoyo:true,repeat:-1});this.effects.push(p);}}
+   if(room==='town'){const tail=this.add.rectangle(360,361,10,3,0xc6b79c).setOrigin(1,.5);this.tweens.add({targets:tail,angle:-25,duration:1600,yoyo:true,repeat:-1});this.effects.push(tail);for(let i=0;i<14;i++){const p=this.add.rectangle((i*61)%768,(i*97)%576,3,2,i%2?0xe8c1cb:0xe8d8b4,.7).setDepth(12);this.tweens.add({targets:p,x:p.x+40,y:p.y+85,alpha:0,duration:6500+i*200,repeat:-1,delay:i*300});this.effects.push(p);}for(let i=0;i<8;i++){const p=this.add.rectangle(610+i*17,354+(i%4)*38,12,2,0xd6e5da,.4);this.tweens.add({targets:p,alpha:.1,x:p.x+9,duration:1800+i*110,yoyo:true,repeat:-1});this.effects.push(p);}}
    else {const glow=this.add.ellipse(550,165,135,65,0xffedbd,.09).setDepth(4);this.effects.push(glow);}
    emit('room',rooms[room].name);if(fade)this.cameras.main.fadeIn(420,40,34,43);this.changing=false;
   };
@@ -35,7 +35,7 @@ export class World extends Phaser.Scene {
   if(s.to){this.switchRoom(s.to,s.spawn!);return;}
   this.player.setTexture(`hero-${this.direction}-1`);
   if(s.gift==='video'||s.gift==='letter'){const lid=this.add.rectangle(s.x,s.y-(s.gift==='video'?37:30),s.gift==='video'?32:24,7,s.gift==='video'?0xc7a178:0xc799a1).setDepth(8);this.tweens.add({targets:lid,y:lid.y-10,alpha:0,duration:700,onComplete:()=>lid.destroy()});for(let i=0;i<7;i++){const star=this.add.text(s.x,s.y-28,'✧',{fontSize:'12px',color:'#ffe8ac'}).setDepth(13);this.tweens.add({targets:star,x:s.x+(i-3)*10,y:s.y-60-Math.abs(i-3)*4,alpha:0,duration:900,onComplete:()=>star.destroy()});}}
-  controls.paused=true;emit('gift',s.gift);emit('hint',null);
+  controls.paused=true;this.lastHint='';emit('gift',s.gift);emit('hint',null);
  }
  canWalk(x:number,y:number){return !rooms[this.room].blocks.some(([bx,by,w,h])=>x+7>bx&&x-7<bx+w&&y>by&&y-9<by+h);}
  update(time:number,delta:number){

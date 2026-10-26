@@ -4,14 +4,18 @@ export type Art = ReturnType<typeof painter>;
 export function painter(w:number,h:number) {
  const canvas=document.createElement('canvas'); canvas.width=w;canvas.height=h;
  const c=canvas.getContext('2d')!; c.imageSmoothingEnabled=false;
- const rect=(x:number,y:number,w:number,h:number,col:string)=>{c.fillStyle=col;c.fillRect(Math.round(x),Math.round(y),w,h);};
+ const rect=(x:number,y:number,w:number,h:number,col:string)=>{c.fillStyle=col;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));};
  const line=(x:number,y:number,w:number,col:string)=>rect(x,y,w,2,col);
  return {canvas,c,rect,line};
 }
 export function tree(a:Art,x:number,y:number,s=1) {
- const {rect:r}=a; r(x+14*s,y+34*s,14*s,12*s,'#90a17b');r(x+18*s,y+20*s,8*s,24*s,'#92795f');r(x+22*s,y+26*s,3*s,15*s,'#b99b76');
- for(const [dx,dy,w,h,col] of [[6,12,32,22,'#718d73'],[0,8,42,19,'#809d7b'],[6,0,30,22,'#93ad87'],[12,-6,20,18,'#a6bb93'],[4,10,12,8,'#a2b78a'],[27,16,10,7,'#6e8b71']] as [number,number,number,number,string][])r(x+dx*s,y+dy*s,w*s,h*s,col);
- r(x+13*s,y+2*s,7*s,3*s,'#bbca9b');r(x+6*s,y+18*s,5*s,3*s,'#b0c394');
+ const r=(dx:number,dy:number,w:number,h:number,col:string)=>a.rect(x+dx*s,y+dy*s,w*s,h*s,col);
+ r(6,36,32,5,'#8b9f7b');r(17,18,9,26,'#796d58');r(19,21,4,22,'#ab8e69');r(23,29,7,3,'#796d58');
+ const palette=['#667f69','#769272','#87a27b','#98af83','#afbf92'];
+ for(const [cx,cy,rx,ry] of [[22,18,21,14],[12,13,12,12],[30,12,13,12],[21,5,15,12]]){
+  for(let py=-ry;py<=ry;py+=2)for(let px=-rx;px<=rx;px+=2){const nx=px/rx,ny=py/ry;if(nx*nx+ny*ny>1)continue;const hash=Math.abs(((px+39)*17+(py+43)*13+Math.round(x)*7))%29;let shade=ny<-.4?3:ny>.5?0:ny>0?1:2;if(hash<4)shade=Math.min(4,shade+1);if(hash>26)shade=Math.max(0,shade-1);r(cx+px,cy+py,2,2,palette[shade]);}
+ }
+ r(15,-3,6,2,'#bfcca0');r(7,12,4,2,'#b1c194');r(28,5,4,2,'#b1c194');
 }
 export function flower(a:Art,x:number,y:number,col='#e9bfca') { a.rect(x+2,y+4,2,5,'#789573');a.rect(x,y,6,4,col);a.rect(x+2,y-2,2,8,col);a.rect(x+2,y+1,2,2,'#f7e6b6'); }
 export function pot(a:Art,x:number,y:number) {a.rect(x,y,14,12,'#b78271');a.rect(x-2,y,18,3,'#d3aa8a');a.rect(x+4,y-13,4,14,'#76977b');a.rect(x-2,y-11,8,5,'#8ea685');a.rect(x+7,y-17,9,6,'#a6ba96');}
@@ -45,7 +49,7 @@ export function makeMap(room:'bedroom'|'town'|'cafe') {
   for(let x=54;x<295;x+=18){r(x,262,6,30,'#dfd5b7');r(x,270,19,4,'#c9b99c');r(x,281,19,4,'#c9b99c');}
   r(297,408,69,8,'#ab8b70');r(297,419,69,8,'#c6a17b');r(303,427,5,12,'#7e7463');r(356,427,5,12,'#7e7463');
   r(66,389,69,47,'#c1a4a3');r(70,393,61,39,'#e2c3bd');for(let xx=72;xx<130;xx+=12)r(xx,394,4,38,'#eedbc8');
-  for(let i=0;i<120;i++){let x=rnd()*768,y=rnd()*576;if((x<75||x>660||y>490||y<65)||(x>285&&x<430&&y>115&&y<260))flower(a,x,y,['#e3b4c1','#f0e4ba','#c6bed5'][i%3]);}
+  for(let i=0;i<120;i++){let x=rnd()*768,y=rnd()*576;if(!(x>560&&y>310)&&((x<75||x>660||y>490||y<65)||(x>285&&x<430&&y>115&&y<260)))flower(a,x,y,['#e3b4c1','#f0e4ba','#c6bed5'][i%3]);}
   [[5,60],[39,119],[294,39],[365,69],[658,76],[706,126],[11,318],[12,470],[196,490],[301,500],[430,479],[688,250],[350,170],[706,16],[570,24]].forEach(([x,y])=>tree(a,x,y,1.3));
   // Mailbox
   r(278,265,7,38,'#927c69');r(266,249,31,23,'#aa7e8c');r(269,245,25,7,'#c799a1');r(272,254,19,3,'#786776');r(295,243,3,17,'#9b7468');r(298,243,10,7,'#dfbaa9');
@@ -56,6 +60,7 @@ export function makeMap(room:'bedroom'|'town'|'cafe') {
  } else {
   r(0,0,768,576,'#655b67');r(79,62,610,452,'#a28576');r(87,70,594,117,'#e5d5ba');r(87,177,594,329,'#c5a181');
   for(let y=183;y<505;y+=18){r(88,y,592,2,'#ad896f');for(let x=90+(y%36?45:0);x<680;x+=90)r(x,y,1,18,'#b58e73');}
+  for(let y=190;y<500;y+=36)for(let x=103+(y%4)*11;x<670;x+=87){r(x,y,12,1,'#bd997b');r(x+5,y+3,5,1,'#bc9679');}
   r(87,170,594,10,'#8e7368');r(88,76,592,5,'#f4e7cf');windowArt(a,174,104,58,51);windowArt(a,520,104,58,51);
   // door and entry rug
   r(355,493,58,21,'#817064');r(351,506,66,8,'#e4c9a0');r(340,461,88,28,'#b6b5a0');r(344,465,80,20,'#d6d2b7');
@@ -72,6 +77,30 @@ export function makeMap(room:'bedroom'|'town'|'cafe') {
    r(338,277,90,67,'#b6a1ad');r(343,281,80,58,'#e6d9c9');r(361,294,43,25,'#c18b98');r(361,291,43,9,'#f4e4c8');for(let x=365;x<402;x+=8)r(x,298,4,5,'#f1d4bc');r(367,285,31,9,'#f4dfcc');r(381,275,3,12,'#baab8e');r(379,269,6,7,'#e6b66e');
    pot(a,631,200);pot(a,116,456);r(365,95,56,58,'#8b7466');r(370,100,46,48,'#b8b9a1');a.c.fillStyle='#f4e4c7';a.c.font='10px serif';a.c.textAlign='center';a.c.fillText('TODAY',393,120);a.c.fillText('FOR YOU',393,138);
   }
+ }
+ if(room!=='town'){
+  // Furniture edging, woven rug pattern, tiny objects and pools of warm window light.
+  for(let x=92;x<677;x+=8)r(x,178,3,2,'#d2b392');
+  r(97,190,4,298,'#a7876d');r(666,190,4,298,'#a7876d');
+  if(room==='bedroom'){
+   r(119,253,2,84,'#eee5dc');r(202,253,2,84,'#b3a5bc');
+   for(let y=269;y<333;y+=16)for(let x=132;x<193;x+=16)r(x,y,3,3,'#eee4e4');
+   for(let x=318;x<459;x+=7){r(x,310,2,5,'#b48f94');r(x,410,2,5,'#b48f94');}
+   for(let y=336;y<389;y+=8){r(319,y,3,3,'#c4a5a7');r(453,y,3,3,'#c4a5a7');}
+   r(507,227,15,4,'#9a9f88');r(507,231,15,3,'#ead3af');r(508,234,14,3,'#b3a4b0');
+   r(572,228,7,8,'#c9d3bc');r(601,228,6,10,'#8c7d6b');r(600,221,8,7,'#e4d5af');
+   for(let i=0;i<3;i++){r(305+i*37,136+(i%2)*7,10,2,'#e1c39c');r(299+i*37,146+(i%2)*7,27,1,'#c6ac92');}
+  }else{
+   for(let x=121;x<330;x+=16){r(x,242,8,2,'#775d50');r(x,204,2,4,'#f2d9b2');}
+   r(220,177,28,23,'#d0b08a');r(224,180,20,15,'#a08166');r(228,182,5,7,'#e9d8b9');r(237,182,4,7,'#e9d8b9');
+   for(const x of [155,515]){r(x+3,321,84,2,'#e6c49b');r(x+3,362,84,3,'#a27e62');r(x+61,330,12,6,'#e6d2b1');r(x+63,328,8,2,'#a8a98b');r(x+5,297,12,17,'#a58a73');}
+   r(374,331,17,3,'#b6998a');r(349,285,1,46,'#d0bdad');r(419,285,1,46,'#d0bdad');
+  }
+ }else{
+  // Tufts along the shore and wildflower beds around the homes.
+  for(let i=0;i<65;i++){const x=i<25?62+rnd()*65:i<45?95+rnd()*50:583+rnd()*43,y=i<25?332+rnd()*27:i<45?233+rnd()*14:263+rnd()*25;flower(a,x,y,['#e7c5ca','#e4dcad','#c8c1da'][i%3]);}
+  for(let y=340;y<520;y+=18){r(573,y,2,9,'#799f8c');r(570,y+4,3,2,'#8cae92');}
+  for(const [x,y] of [[81,236],[620,241],[567,386]]){r(x,y-33,4,34,'#85796a');r(x-4,y-41,12,10,'#7c7065');r(x-2,y-39,8,6,'#eddaaa');r(x-5,y-43,14,3,'#8a7768');r(x-1,y-48,4,5,'#8a7768');r(x-3,y,10,3,'#7e7465');}
  }
  return a.canvas;
 }
